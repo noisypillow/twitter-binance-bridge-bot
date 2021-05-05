@@ -22,8 +22,7 @@ class TweetListener(tweepy.StreamListener):
         self.keywords = keywords #keywords wich have to be in the tweet
         self.exec_func = exec_func #function to be executed on verifed status
 
-        auth = tweepy.OAuthHandler("VBc6RgtwsW7SzBVPAHW0D8q9w", "PDVvgra3rPsQbrfxG3tpHhe9qB2jlwaUFNnshBk2rkC0bqEkaJ")
-        auth.set_access_token("884457459183738880-v73XQPDNV54iqycRi5XanfNqv2UzRPo", "7ugYRiUOb9HmA7WUP1uIDqJ9hGRyxzk6Op0URn1NwEZie")
+
 
         self.stream = tweepy.Stream(auth = auth, listener = self)
         self.update()
@@ -42,4 +41,3 @@ class TweetListener(tweepy.StreamListener):
     def on_status(self, status):
         if verify(status, self.keywords):
             self.exec_func(status)
-
