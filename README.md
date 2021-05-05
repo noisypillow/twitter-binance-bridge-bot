@@ -12,4 +12,4 @@ This bot is able to buy and sell $DOGE on Binance whenever Elon Musk tweets abou
 *	The time between buying order and selling order
 
 
-If you fin this bot usefull, a small tip would be really cool 🥰 DNQNffakrL79cpzNBjB54kCSPhYEdUUAJ7 (DOGE adress)
+###### If you fin this bot usefull, a small tip would be really cool 🥰 DNQNffakrL79cpzNBjB54kCSPhYEdUUAJ7 (DOGE adress)
