@@ -1,6 +1,7 @@
 from types import FunctionType
 import tweepy
 
+
 def verify(status, keywords):
     if hasattr(status, 'retweeted_status'):
         return False
@@ -15,16 +16,15 @@ def verify(status, keywords):
     else:
         print("False alert.")
 
+
 class TweetListener(tweepy.StreamListener):
     def __init__(self, tweeter_id: str, keywords: str, exec_func):
-        super().__init__() #inits mother class
-        self.tweeter_id = tweeter_id #id of the tracked profile
-        self.keywords = keywords #keywords wich have to be in the tweet
-        self.exec_func = exec_func #function to be executed on verifed status
+        super().__init__()  #inits mother class
+        self.tweeter_id = tweeter_id  #id of the tracked profile
+        self.keywords = keywords  #keywords wich have to be in the tweet
+        self.exec_func = exec_func  #function to be executed on verifed status
 
-
-
-        self.stream = tweepy.Stream(auth = auth, listener = self)
+        self.stream = tweepy.Stream(auth=auth, listener=self)
         self.update()
 
     def update(self):

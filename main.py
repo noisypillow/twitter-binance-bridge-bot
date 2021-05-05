@@ -128,7 +128,7 @@ def buy(retry):
     elif retry > 0:
         print(datetime.now().strftime("\033[91m%d-%m-%Y %H:%M:%S | \033[0m") +
               "\033[91mOrder error\033[0m")
-        print(r.content.decode())
+        print(order_created.content.decode())
         print("\033[91mRetrying...\033[0m")
         retry -= 1
         buy(retry)
@@ -158,7 +158,7 @@ def sell(order_id, retry, commission):
     elif retry > 0:
         print(datetime.now().strftime("\033[91m%d-%m-%Y %H:%M:%S | \033[0m") +
               "\033[91mOrder error\033[0m")
-        print(r.content.decode())
+        print(order_created.content.decode())
         print("\033[91mRetrying...\033[0m")
         retry -= 1
         sell(retry)
