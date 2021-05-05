@@ -10,3 +10,6 @@ This bot is able to buy and sell $DOGE on Binance whenever Elon Musk tweets abou
 * The keywords you're tracking
 *	The base asset and the amount you want the bot to spend for each tweet
 *	The time between buying order and selling order
+
+## Miscellaneous
+If you fin this bot usefull, a small tip would be really cool 🥰 *DNQNffakrL79cpzNBjB54kCSPhYEdUUAJ7* (DOGE adress)
