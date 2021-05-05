@@ -22,6 +22,11 @@ TESTNET_URL = "https://testnet.binance.vision/api/v3/"
 TESTNET_PUB_KEY = keys['TESTNET_PUB_KEY']
 TESTNET_SECRET_KEY = keys['TESTNET_SECRET_KEY'].encode()
 
+TWITTER_KEYS = [
+    keys['API_KEY'], keys['API_SECRET_KEY'], keys['ACCESS_TOKEN'],
+    keys['SECRET_ACCESS_TOKEN']
+]
+
 FREE = True
 URL = LIVE_URL
 SECRET_KEY = LIVE_SECRET_KEY
@@ -184,7 +189,7 @@ if __name__ == "__main__":
     while True:
         try:
             print('Start streaming.')
-            TweetListener('44196397', 'doge', got_tweet)
+            TweetListener(TWITTER_KEYS, '44196397', 'doge', got_tweet)
         except KeyboardInterrupt:
             print("Stream stopped.")
             break

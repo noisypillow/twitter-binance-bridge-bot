@@ -18,11 +18,14 @@ def verify(status, keywords):
 
 
 class TweetListener(tweepy.StreamListener):
-    def __init__(self, tweeter_id: str, keywords: str, exec_func):
+    def __init__(self, keys, tweeter_id: str, keywords: str, exec_func):
         super().__init__()  #inits mother class
         self.tweeter_id = tweeter_id  #id of the tracked profile
         self.keywords = keywords  #keywords wich have to be in the tweet
         self.exec_func = exec_func  #function to be executed on verifed status
+
+        auth = tweepy.OAuthHandler(keys[0], keys[1])
+        auth.set_access_token(keys[2], keys[3])
 
         self.stream = tweepy.Stream(auth=auth, listener=self)
         self.update()
