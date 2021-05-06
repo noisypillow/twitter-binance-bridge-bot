@@ -40,7 +40,7 @@ class BinanceClient():
         timestamp = time_request.json()['serverTime']
         return timestamp
 
-    def round_down(n, decimals=0):
+    def round_down(slef, n, decimals=0):
         multiplier = 10**decimals
         return math.floor(n * multiplier) / multiplier
 
@@ -77,7 +77,7 @@ class BinanceClient():
         else:
             return False
 
-    def get_details(response):
+    def get_details(self, response):
         sides = {'SELL': "Sold", 'BUY': "Bought"}
         orders = 0
         commission = 0
