@@ -1,4 +1,5 @@
 import math
+from urllib3 import exceptions
 import requests
 from time import sleep
 import json
@@ -8,7 +9,7 @@ import hmac
 from requests.models import ProtocolError
 from utilities import TweetListener
 
-ASSET = ["USDT", 11]
+ASSET = ["USDT", 20]
 SYMBOL = "DOGE"
 
 f = open("keys.txt", 'r')
@@ -178,7 +179,7 @@ def got_tweet(status):
               f"Elon just tweeted about ${SYMBOL}:")
         print("    " + status.text)
         order_id, commission = buy(3)
-        sleep(5)
+        sleep(500)
         sell(order_id, 5, commission)
         print("----------------------------------------------------------")
     else:
@@ -196,3 +197,5 @@ if __name__ == "__main__":
         except ProtocolError:
             print("ProtocolError, retying..")
             pass
+        except exceptions.ReadTimeoutError:
+            print("ReadTimoutError, retrying..")
