@@ -3,7 +3,7 @@ from datetime import datetime
 from time import sleep
 from urllib3 import exceptions
 
-from TradingCore import BinanceClient
+from TradingCore import BinanceClient, BaseAssetBalanceTooLow
 from requests.models import ProtocolError
 from TweeterCore import TweetListener
 
@@ -17,7 +17,7 @@ BINANCE_KEYS = [keys['LIVE_PUB_KEY'], keys['LIVE_SECRET_KEY']]
 
 
 def got_tweet(status):
-    if binance_client.verify_base_asset_balance():
+    try:
         print(datetime.now().strftime(f"%d-%m-%Y %H:%M:%S | ") +
               f"Elon just tweeted about ${binance_client.ASSET}:")
         print("    " + status.text)
@@ -25,7 +25,7 @@ def got_tweet(status):
         sleep(5)
         binance_client.sell(order_id, 5, commission)
         print("----------------------------------------------------------")
-    else:
+    except BaseAssetBalanceTooLow:
         print("Not enough liquidity.")
 
 
