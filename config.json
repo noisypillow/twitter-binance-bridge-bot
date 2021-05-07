@@ -1,0 +1,7 @@
+{
+    "URL": "https://api3.binance.com/api/v3/",
+    "TESTNET_URL": "https://testnet.binance.vision/api/v3/",
+    "ASSET": "DOGE",
+    "BASE_ASSET": "USDT",
+    "BASE_ASSET_QUANTITY": 20
+}
