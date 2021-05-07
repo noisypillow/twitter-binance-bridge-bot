@@ -28,6 +28,8 @@ class TweetListener(tweepy.StreamListener):
         auth.set_access_token(keys[2], keys[3])
 
         self.stream = tweepy.Stream(auth=auth, listener=self)
+
+    def start(self):
         self.update()
 
     def update(self):
