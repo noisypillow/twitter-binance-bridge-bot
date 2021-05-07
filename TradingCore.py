@@ -4,9 +4,12 @@ import json
 from datetime import datetime
 import hashlib
 import hmac
+from time import sleep
+
 
 class BaseAssetBalanceTooLow(Exception):
     pass
+
 
 class BinanceClient():
     def __init__(self, keys, config_file: str = "config.json"):
@@ -20,8 +23,24 @@ class BinanceClient():
         self.ASSET = config['ASSET']
         self.BASE_ASSET = config['BASE_ASSET']
         self.BASE_ASSET_QUANTITY = config['BASE_ASSET_QUANTITY']
+        self.INTERVAL = config['INTERVAL']
 
         self.PRECISION = self.get_precision()
+
+        self.log_file = open('trades.log', 'a+')
+
+    def on_tweet(self, status):
+        try:
+            print("----------------------------------------------------------")
+            print(datetime.now().strftime("[%d-%m-%Y %H:%M:%S] ") +
+                  f"Just got tweet about ${self.ASSET}:")
+            print("    " + status.text)
+            total_bought, order_id, commission = self.buy(3)
+            sleep(self.INTERVAL)
+            total_sold = self.sell(order_id, 5, commission)
+            print("Profit = " + str(total_sold - total_bought))
+        except BaseAssetBalanceTooLow:
+            print("Not enough liquidity.")
 
     def get_precision(self):
         exchange_info = requests.get(self.URL + "exchangeInfo")
@@ -79,19 +98,6 @@ class BinanceClient():
         else:
             return False
 
-    def get_details(self, response):
-        sides = {'SELL': "Sold", 'BUY': "Bought"}
-        orders = 0
-        commission = 0
-        for filled in response['fills']:
-            commission += float(filled['commission'])
-            if orders == 0:
-                str_to_print = f"{sides[response['side']]} {filled['qty']} at {filled['price']}"
-            else:
-                str_to_print = str_to_print + f", then {filled['qty']} at {filled['price']}"
-            orders += 1
-        return str_to_print, commission
-
     def get_order_status(self, order_id):
         TOTAL_PARAMS = f"symbol={self.ASSET + self.BASE_ASSET}&orderId={order_id}&timestamp={self.get_timestamp()}"
         TOTAL_PARAMS_b = TOTAL_PARAMS.encode('ASCII')
@@ -112,23 +118,20 @@ class BinanceClient():
             TOTAL_PARAMS = f"symbol={self.ASSET + self.BASE_ASSET}&side=BUY&type=MARKET&quantity={quantity}&recvWindow=3000&timestamp={self.get_timestamp()}"
             TOTAL_PARAMS_b = TOTAL_PARAMS.encode('ASCII')
             signature = hmac.new(self.SECRET_KEY, TOTAL_PARAMS_b,
-                             hashlib.sha256).hexdigest()
+                                 hashlib.sha256).hexdigest()
             payload = TOTAL_PARAMS + "&signature=" + signature
             headers = {'X-MBX-APIKEY': self.PUB_KEY}
 
             order_created = requests.post(self.URL + "order?" + payload,
-                                      headers=headers)
+                                          headers=headers)
             response = order_created.json()
-            str_to_print, commission = self.get_details(response)
             if response['status'] == 'FILLED':
-                print(datetime.now().strftime(
-                    "\033[92m%d-%m-%Y %H:%M:%S | \033[0m") +
-                    f"\033[92m{str_to_print}\033[0m")
-                return response['orderId'], commission
+                total_bought, commission = self.log(response)
+                return total_bought, response['orderId'], commission
             elif retry > 0:
                 print(datetime.now().strftime(
                     "\033[91m%d-%m-%Y %H:%M:%S | \033[0m") +
-                    "\033[91mOrder error\033[0m")
+                      "\033[91mOrder error\033[0m")
                 print(order_created.content.decode())
                 print("\033[91mRetrying...\033[0m")
                 retry -= 1
@@ -154,11 +157,9 @@ class BinanceClient():
         order_created = requests.post(self.URL + "order?" + payload,
                                       headers=headers)
         response = order_created.json()
-        str_to_print, commission = self.get_details(response)
         if response['status'] == 'FILLED':
-            print(datetime.now().strftime(
-                "\033[94m%d-%m-%Y %H:%M:%S | \033[0m") +
-                  f"\033[94m{str_to_print}\033[0m")
+            total_sold, commission = self.log(response)
+            return total_sold
         elif retry > 0:
             print(datetime.now().strftime(
                 "\033[91m%d-%m-%Y %H:%M:%S | \033[0m") +
@@ -170,3 +171,20 @@ class BinanceClient():
         else:
             print("guess we'll pass for this time...")
             retry = 0
+
+    def log(self, response):
+        commission = 0
+        for filled in response['fills']:
+            commission += float(filled['commission'])
+            trade_time = datetime.now().strftime(" [%d-%m-%Y %H:%M:%S] ")
+            log = response['side'] + trade_time + str(filled) + "\n"
+            self.log_file.write(log)
+
+            total = float(filled['price']) * float(filled['qty'])
+            if response['side'] == 'BUY':
+                formated_log = '\033[92mBUY' + trade_time + f"total: {total}\033[0m"
+            elif response['side'] == 'SELL':
+                formated_log = '\033[94mSELL' + trade_time + f"total: {total}\033[0m"
+            print(formated_log)
+        self.log_file.flush()
+        return total, commission

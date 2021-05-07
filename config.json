@@ -3,5 +3,6 @@
     "TESTNET_URL": "https://testnet.binance.vision/api/v3/",
     "ASSET": "DOGE",
     "BASE_ASSET": "USDT",
-    "BASE_ASSET_QUANTITY": 20
+    "BASE_ASSET_QUANTITY": 15,
+    "INTERVAL": 5
 }
