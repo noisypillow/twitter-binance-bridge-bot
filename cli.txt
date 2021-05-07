@@ -1,0 +1,3 @@
+https://github.com/CITGuru/PyInquirer
+https://pypi.org/project/colorama/
+https://pypi.org/project/progress/
