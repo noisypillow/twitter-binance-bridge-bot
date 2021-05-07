@@ -34,8 +34,7 @@ if __name__ == "__main__":
         try:
             print('Start streaming.')
             binance_client = BinanceClient(BINANCE_KEYS)
-            TweetListener(TWITTER_KEYS, '884457459183738880', 'doge',
-                          got_tweet)
+            TweetListener(TWITTER_KEYS, '44196397', 'doge', got_tweet)
         except KeyboardInterrupt:
             print("Stream stopped.")
             break
