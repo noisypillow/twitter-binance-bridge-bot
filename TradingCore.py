@@ -6,7 +6,7 @@ import hashlib
 import hmac
 
 class BaseAssetBalanceTooLow(Exception):
-	pass
+    pass
 
 class BinanceClient():
     def __init__(self, keys, config_file: str = "config.json"):
@@ -137,8 +137,8 @@ class BinanceClient():
                 print("guess we'll pass for this time...")
                 retry = 0
         else:
-			raise BaseAssetBalanceTooLow
-    
+            raise BaseAssetBalanceTooLow
+
     def sell(self, order_id, retry, commission):
         response = self.get_order_status(order_id)
         quantity = float(response['executedQty']) - commission
