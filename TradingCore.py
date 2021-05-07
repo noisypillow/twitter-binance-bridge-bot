@@ -5,6 +5,8 @@ from datetime import datetime
 import hashlib
 import hmac
 
+class BaseAssetBalanceTooLow(Exception):
+	pass
 
 class BinanceClient():
     def __init__(self, keys, config_file: str = "config.json"):
@@ -104,36 +106,39 @@ class BinanceClient():
         return response
 
     def buy(self, retry):
-        quantity = self.get_quantity()
+        if self.verify_base_asset_balance():
+            quantity = self.get_quantity()
 
-        TOTAL_PARAMS = f"symbol={self.ASSET + self.BASE_ASSET}&side=BUY&type=MARKET&quantity={quantity}&recvWindow=3000&timestamp={self.get_timestamp()}"
-        TOTAL_PARAMS_b = TOTAL_PARAMS.encode('ASCII')
-        signature = hmac.new(self.SECRET_KEY, TOTAL_PARAMS_b,
+            TOTAL_PARAMS = f"symbol={self.ASSET + self.BASE_ASSET}&side=BUY&type=MARKET&quantity={quantity}&recvWindow=3000&timestamp={self.get_timestamp()}"
+            TOTAL_PARAMS_b = TOTAL_PARAMS.encode('ASCII')
+            signature = hmac.new(self.SECRET_KEY, TOTAL_PARAMS_b,
                              hashlib.sha256).hexdigest()
-        payload = TOTAL_PARAMS + "&signature=" + signature
-        headers = {'X-MBX-APIKEY': self.PUB_KEY}
+            payload = TOTAL_PARAMS + "&signature=" + signature
+            headers = {'X-MBX-APIKEY': self.PUB_KEY}
 
-        order_created = requests.post(self.URL + "order?" + payload,
+            order_created = requests.post(self.URL + "order?" + payload,
                                       headers=headers)
-        response = order_created.json()
-        str_to_print, commission = self.get_details(response)
-        if response['status'] == 'FILLED':
-            print(datetime.now().strftime(
-                "\033[92m%d-%m-%Y %H:%M:%S | \033[0m") +
-                  f"\033[92m{str_to_print}\033[0m")
-            return response['orderId'], commission
-        elif retry > 0:
-            print(datetime.now().strftime(
-                "\033[91m%d-%m-%Y %H:%M:%S | \033[0m") +
-                  "\033[91mOrder error\033[0m")
-            print(order_created.content.decode())
-            print("\033[91mRetrying...\033[0m")
-            retry -= 1
-            self.buy(retry)
+            response = order_created.json()
+            str_to_print, commission = self.get_details(response)
+            if response['status'] == 'FILLED':
+                print(datetime.now().strftime(
+                    "\033[92m%d-%m-%Y %H:%M:%S | \033[0m") +
+                    f"\033[92m{str_to_print}\033[0m")
+                return response['orderId'], commission
+            elif retry > 0:
+                print(datetime.now().strftime(
+                    "\033[91m%d-%m-%Y %H:%M:%S | \033[0m") +
+                    "\033[91mOrder error\033[0m")
+                print(order_created.content.decode())
+                print("\033[91mRetrying...\033[0m")
+                retry -= 1
+                self.buy(retry)
+            else:
+                print("guess we'll pass for this time...")
+                retry = 0
         else:
-            print("guess we'll pass for this time...")
-            retry = 0
-
+			raise BaseAssetBalanceTooLow
+    
     def sell(self, order_id, retry, commission):
         response = self.get_order_status(order_id)
         quantity = float(response['executedQty']) - commission
