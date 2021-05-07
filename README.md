@@ -1,4 +1,4 @@
-# Elon-Doge bot
+# Twitter Binance bridge bot
 
 ### 🛑 This script is still in active developement, use at your own risk 🛑
 
