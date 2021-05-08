@@ -7,7 +7,7 @@ from requests.models import ProtocolError
 from TweeterCore import TweetListener
 
 
-class BinanceTwitterBridge():
+class BinanceTwitterBridge:
     def __init__(self):
 
         keys = json.loads(open('keys.json', 'r').read())
@@ -39,6 +39,9 @@ class BinanceTwitterBridge():
                 print("ReadTimoutError, retrying..")
             except Exception as e:
                 print(e)
+
+    def reload_config(self):
+        self.binance_client.reload_config()
 
 
 if __name__ == "__main__":
