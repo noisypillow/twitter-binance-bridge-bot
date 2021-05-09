@@ -14,6 +14,8 @@ This bot is able to buy and sell $DOGE on Binance whenever Elon Musk tweets abou
 - [ ] Complete CLI
 - [ ] Docs
 
+## User guide
+
 
 ## What you can configure (in `config.json` or directly from CLI)
 
