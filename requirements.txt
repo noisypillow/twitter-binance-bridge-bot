@@ -1,0 +1,7 @@
+progress==1.5
+requests==2.25.0
+urllib3==1.25.9
+tweepy==3.10.0
+colorama==0.4.4
+art==5.2
+PyInquirer==1.0.3
