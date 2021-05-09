@@ -1,8 +1,10 @@
 {
-    "URL": "https://api3.binance.com/api/v3/",
-    "TESTNET_URL": "https://testnet.binance.vision/api/v3/",
+    "URL": "https://api3.binance.com",
+    "TESTNET_URL": "https://testnet.binance.vision",
     "ASSET": "DOGE",
     "BASE_ASSET": "USDT",
-    "BASE_ASSET_QUANTITY": "20",
-    "INTERVAL": "100"
+    "BASE_ASSET_QUANTITY": 15,
+    "INTERVAL": 8,
+    "TWITTER_ID": "",
+    "KEYWORD": ""
 }

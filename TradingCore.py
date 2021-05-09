@@ -6,6 +6,7 @@ import hashlib
 import hmac
 from time import sleep
 from ConfigManager import Config
+from progress.bar import ShadyBar
 
 
 class BaseAssetBalanceTooLow(Exception):
@@ -13,7 +14,7 @@ class BaseAssetBalanceTooLow(Exception):
 
 
 class BinanceClient:
-    def __init__(self, keys, config_file: str = "config.json"):
+    def __init__(self, keys):
         self.config = Config()
 
         self.PUB_KEY = keys[0]
@@ -25,6 +26,7 @@ class BinanceClient:
 
     def reload_config(self):
         self.config = Config()
+        self.PRECISION = self.get_precision()
 
     def on_tweet(self, status):
         try:
@@ -33,14 +35,21 @@ class BinanceClient:
                   f"Just got tweet about ${self.config.ASSET}:")
             print("    " + status.text)
             total_bought, order_id, commission = self.buy(3)
-            sleep(self.config.INTERVAL)
+
+            bar = ShadyBar('Waiting',
+                           max=self.config.INTERVAL,
+                           suffix='%(percent)d%%')
+            for i in range(self.config.INTERVAL):
+                sleep(1)
+                bar.next()
+            bar.finish()
             total_sold = self.sell(order_id, 5, commission)
             print("Profit = " + str(total_sold - total_bought))
         except BaseAssetBalanceTooLow:
             print("Not enough liquidity.")
 
     def get_precision(self):
-        exchange_info = requests.get(self.config.URL + "exchangeInfo")
+        exchange_info = requests.get(self.config.URL + "/api/v3/exchangeInfo")
         exchangeInfo = exchange_info.json()
         for crypto in exchangeInfo['symbols']:
             if crypto['symbol'] == self.config.ASSET + self.config.BASE_ASSET:
@@ -54,7 +63,7 @@ class BinanceClient:
         return precision
 
     def get_timestamp(self):
-        time_request = requests.get(self.config.URL + "time")
+        time_request = requests.get(self.config.URL + "/api/v3/time")
         timestamp = time_request.json()['serverTime']
         return timestamp
 
@@ -62,17 +71,18 @@ class BinanceClient:
         multiplier = 10**decimals
         return math.floor(n * multiplier) / multiplier
 
+    def get_price(self, symbol):
+        symbol_info = requests.get(self.config.URL +
+                                   f"/api/v3/ticker/price?symbol={symbol}")
+        return symbol_info.json()['price']
+
     def get_quantity(self):
-        symbol_info = requests.get(
-            self.config.URL +
-            f"ticker/price?symbol={self.config.ASSET + self.config.BASE_ASSET}"
-        )
-        price = symbol_info.json()['price']
+        price = self.get_price(self.config.ASSET + self.config.BASE_ASSET)
         quantity = self.config.BASE_ASSET_QUANTITY / float(price)
         quantity = float(round(quantity, self.PRECISION))
         return quantity
 
-    def verify_base_asset_balance(self):
+    def get_asset_blance(self, asset):
         TOTAL_PARAMS = f"timestamp={self.get_timestamp()}"
         TOTAL_PARAMS_b = TOTAL_PARAMS.encode('ASCII')
         signature = hmac.new(self.SECRET_KEY, TOTAL_PARAMS_b,
@@ -80,16 +90,21 @@ class BinanceClient:
         payload = TOTAL_PARAMS + "&signature=" + signature
         headers = {'X-MBX-APIKEY': self.PUB_KEY}
 
-        account_info = requests.get(self.config.URL + "account?" + payload,
+        account_info = requests.get(self.config.URL + "/api/v3/account?" +
+                                    payload,
                                     headers=headers)
 
         balances = account_info.json()['balances']
         for balance in balances:
-            if balance['asset'] == self.config.BASE_ASSET:
-                if float(balance['free']) > self.config.BASE_ASSET_QUANTITY:
-                    return True
-                else:
-                    return False
+            if balance['asset'] == asset:
+                return float(balance['free'])
+
+    def verify_base_asset_balance(self):
+        if self.get_asset_blance(
+                self.config.BASE_ASSET) > self.config.BASE_ASSET_QUANTITY:
+            return True
+        else:
+            return False
 
     def get_order_status(self, order_id):
         TOTAL_PARAMS = f"symbol={self.config.ASSET + self.config.BASE_ASSET}&orderId={order_id}&timestamp={self.get_timestamp()}"
@@ -99,7 +114,7 @@ class BinanceClient:
         payload = TOTAL_PARAMS + "&signature=" + signature
         headers = {'X-MBX-APIKEY': self.PUB_KEY}
 
-        order_info = requests.get(self.config.URL + "order?" + payload,
+        order_info = requests.get(self.config.URL + "/api/v3/order?" + payload,
                                   headers=headers)
         response = order_info.json()
         return response
@@ -115,7 +130,8 @@ class BinanceClient:
             payload = TOTAL_PARAMS + "&signature=" + signature
             headers = {'X-MBX-APIKEY': self.PUB_KEY}
 
-            order_created = requests.post(self.config.URL + "order?" + payload,
+            order_created = requests.post(self.config.URL + "/api/v3/order?" +
+                                          payload,
                                           headers=headers)
             response = order_created.json()
             if response['status'] == 'FILLED':
@@ -147,7 +163,8 @@ class BinanceClient:
         payload = TOTAL_PARAMS + "&signature=" + signature
         headers = {'X-MBX-APIKEY': self.PUB_KEY}
 
-        order_created = requests.post(self.config.URL + "order?" + payload,
+        order_created = requests.post(self.config.URL + "/api/v3/order?" +
+                                      payload,
                                       headers=headers)
         response = order_created.json()
         if response['status'] == 'FILLED':

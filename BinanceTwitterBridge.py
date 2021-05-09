@@ -1,8 +1,10 @@
 import json
 from urllib3 import exceptions
+from requests.models import ProtocolError
+
+import UiCore
 
 from TradingCore import BinanceClient
-from requests.models import ProtocolError
 
 from TweeterCore import TweetListener
 
@@ -20,8 +22,7 @@ class BinanceTwitterBridge:
         BINANCE_KEYS = [keys['LIVE_PUB_KEY'], keys['LIVE_SECRET_KEY']]
 
         self.binance_client = BinanceClient(BINANCE_KEYS)
-        self.tweet_listener = TweetListener(TWITTER_KEYS, '44196397',
-                                            'doge',
+        self.tweet_listener = TweetListener(TWITTER_KEYS,
                                             self.binance_client.on_tweet)
 
     def start(self):
@@ -31,7 +32,7 @@ class BinanceTwitterBridge:
                 self.tweet_listener.start()
             except KeyboardInterrupt:
                 print("Stream stopped.")
-                break
+                UiCore.CLI()
             except ProtocolError:
                 print("ProtocolError, retying..")
                 pass
@@ -42,7 +43,8 @@ class BinanceTwitterBridge:
 
     def reload_config(self):
         self.binance_client.reload_config()
+        self.tweet_listener.reload_config()
 
 
 if __name__ == "__main__":
-    BinanceTwitterBridge().start()
+    UiCore.CLI()
