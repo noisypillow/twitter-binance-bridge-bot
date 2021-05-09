@@ -9,19 +9,34 @@ This bot is able to buy and sell $DOGE on Binance whenever Elon Musk tweets abou
 - [x] Tracking tweets
 - [x] Binance integration
 - [x] *config.json* setup
-- [ ] WebSockets support
-- [ ] Session gain summary
+- [x] Gain summary
 - [ ] Code clean-up
 - [ ] Complete CLI
 - [ ] Docs
 
 
-## What you can configure (in config.json)
-* The asset you're buying
-* The tweeter user you want to listen tweets from
-* The keywords you're tracking
-*	The base asset and the amount you want the bot to spend for each tweet
-*	The time between buying order and selling order
+## What you can configure (in `config.json` or directly from CLI)
+
+```json
+{
+    "URL": "https://api.binance.com",
+    "ASSET": "DOGE",
+    "BASE_ASSET": "USDT",
+    "BASE_ASSET_QUANTITY": 100,
+    "INTERVAL": 300,
+    "TWITTER_ID": "44196397",
+    "KEYWORD": "doge"
+}
+```
+
+* `URL` Binance API endpoint (see https://binance-docs.github.io/apidocs/spot/en/#general-info)
+* `ASSET` The asset you're buying
+* `BASE_ASSET` The base asset you're buying with
+* `BASE_ASSET_QUANTITY` The base asset amount you want to spend
+* `INTERVAL` The time between buying order and selling order
+* `TWITTER_ID` The user's id you want to listen tweets from (see https://tweeterid.com/)
+* `KEYWORD` The keyword you're tracking
 
 ## Miscellaneous
-If you fin this bot usefull, a small tip would be really cool 🥰 *DNQNffakrL79cpzNBjB54kCSPhYEdUUAJ7* (DOGE adress)
+If you find this bot usefull, a small tip would be really cool 🥰  
+DOGE: *DNQNffakrL79cpzNBjB54kCSPhYEdUUAJ7*
