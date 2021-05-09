@@ -32,9 +32,9 @@ This bot is able to buy and sell $DOGE on Binance whenever Elon Musk tweets abou
 
 * `URL` Binance API endpoint (see https://binance-docs.github.io/apidocs/spot/en/#general-info)
 * `ASSET` The asset you're buying
-*	`BASE_ASSET ` The base asset you're buying with
-*	`BASE_ASSET_QUANTITY` The base asset amount you want to spend
-*	`INTERVAL` The time between buying order and selling order
+* `BASE_ASSET` The base asset you're buying with
+* `BASE_ASSET_QUANTITY` The base asset amount you want to spend
+* `INTERVAL` The time between buying order and selling order
 * `TWITTER_ID` The user's id you want to listen tweets from (see https://tweeterid.com/)
 * `KEYWORD` The keyword you're tracking
 
