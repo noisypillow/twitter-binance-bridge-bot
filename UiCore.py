@@ -4,6 +4,7 @@ from ConfigManager import Config
 import colorama
 from colorama import Fore, Style
 from art import tprint
+import json
 
 
 class CLI:
@@ -12,9 +13,7 @@ class CLI:
         self.config = Config()
         self.bridge = BinanceTwitterBridge()
         self.binance_client = self.bridge.binance_client
-        self.main_menu()
-
-    def main_menu(self):
+        print('\n')
         tprint("T-B  Bridge", font="random")
         print("----------------------------------------------------------")
         print(f"Current {self.config.ASSET} value: ")
@@ -27,7 +26,28 @@ class CLI:
             " \u001b[33m    ❯ " +
             f"{self.binance_client.get_asset_blance(self.config.BASE_ASSET)} {self.config.BASE_ASSET}\033[0m"
         )
+        print(f"Gain summary: ")
+        print(" \u001b[33m    ❯ " +
+              f"{self.get_gain_summary()} {self.config.BASE_ASSET}\033[0m")
         print("----------------------------------------------------------")
+        self.main_menu()
+
+    def get_gain_summary(self):
+        bought = 0.0
+        sold = 0.0
+        with open('trades.log', 'r') as log_file:
+            trades = log_file.readlines()
+            for trade in trades:
+                details = json.loads(trade.split(' ', 3)[3])
+                if 'BUY' in trade:
+                    bought += float(details['price']) * float(
+                        details['qty']) - float(details['commission'])
+                elif 'SELL' in trade:
+                    sold += float(details['price']) * float(
+                        details['qty']) - float(details['commission'])
+        return sold - bought
+
+    def main_menu(self):
         main_menu_prompt = {
             'type': 'list',
             'name': 'main-menu',

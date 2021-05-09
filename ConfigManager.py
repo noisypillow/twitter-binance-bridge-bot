@@ -16,52 +16,64 @@ class Config:
         self.TWITTER_ID = self.config['TWITTER_ID']
         self.KEYWORD = self.config['KEYWORD']
 
+    def verify_input(self, inputed):
+        if inputed != "":
+            return True
+        else:
+            return False
+
     def update_asset(self, asset):
-        try:
-            int(asset)
-            print("Please input a valid crypto asset")
-        except:
-            self.config['ASSET'] = asset.upper()
-            with open(self.config_file, 'w') as config_file:
-                json.dump(self.config, config_file, indent=4)
+        if self.verify_input(asset):
+            try:
+                int(asset)
+                print("Please input a valid crypto asset")
+            except:
+                self.config['ASSET'] = asset.upper()
+                with open(self.config_file, 'w') as config_file:
+                    json.dump(self.config, config_file, indent=4)
 
     def update_base_asset(self, base_asset):
-        try:
-            int(base_asset)
-            print("Please input a valid base asset")
-        except:
-            self.config['BASE_ASSET'] = base_asset.upper()
+        if self.verify_input(base_asset):
+            try:
+                int(base_asset)
+                print("Please input a valid base asset")
+            except:
+                self.config['BASE_ASSET'] = base_asset.upper()
+                with open(self.config_file, 'w') as config_file:
+                    json.dump(self.config, config_file, indent=4)
+
+    def update_base_asset_quantity(self, base_asset_quantity):
+        if self.verify_input(base_asset_quantity):
+            try:
+                self.config['BASE_ASSET_QUANTITY'] = int(base_asset_quantity)
+            except:
+                print("Please input an integer value")
             with open(self.config_file, 'w') as config_file:
                 json.dump(self.config, config_file, indent=4)
 
-    def update_base_asset_quantity(self, base_asset_quantity):
-        try:
-            self.config['BASE_ASSET_QUANTITY'] = int(base_asset_quantity)
-        except:
-            print("Please input an integer value")
-        with open(self.config_file, 'w') as config_file:
-            json.dump(self.config, config_file, indent=4)
-
     def update_interval(self, interval):
-        try:
-            self.config['INTERVAL'] = int(interval)
-        except:
-            print("Please input an integer value")
-        with open(self.config_file, 'w') as config_file:
-            json.dump(self.config, config_file, indent=4)
+        if self.verify_input(interval):
+            try:
+                self.config['INTERVAL'] = int(interval)
+            except:
+                print("Please input an integer value")
+            with open(self.config_file, 'w') as config_file:
+                json.dump(self.config, config_file, indent=4)
 
     def update_twitter_id(self, twitter_id):
-        try:
-            self.config['TWITTER_ID'] = int(twitter_id)
-        except:
-            print("Please input a valid twitter id")
-        with open(self.config_file, 'w') as config_file:
-            json.dump(self.config, config_file, indent=4)
+        if self.verify_input(twitter_id):
+            try:
+                self.config['TWITTER_ID'] = int(twitter_id)
+            except:
+                print("Please input a valid twitter id")
+            with open(self.config_file, 'w') as config_file:
+                json.dump(self.config, config_file, indent=4)
 
     def update_keyword(self, keyword):
-        self.config['KEYWORD'] = keyword
-        with open(self.config_file, 'w') as config_file:
-            json.dump(self.config, config_file, indent=4)
+        if self.verify_input(keyword):
+            self.config['KEYWORD'] = keyword
+            with open(self.config_file, 'w') as config_file:
+                json.dump(self.config, config_file, indent=4)
 
     def get_url(self):
         return self.config['URL']

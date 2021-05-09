@@ -187,7 +187,8 @@ class BinanceClient:
         for filled in response['fills']:
             commission += float(filled['commission'])
             trade_time = datetime.now().strftime(" [%d-%m-%Y %H:%M:%S] ")
-            log = response['side'] + trade_time + str(filled) + "\n"
+            log = response['side'] + trade_time + str(filled).replace(
+                "\'", "\"") + "\n"
             self.log_file.write(log)
 
             total = float(filled['price']) * float(filled['qty'])

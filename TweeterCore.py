@@ -22,7 +22,7 @@ class TweetListener(tweepy.StreamListener):
     def __init__(self, keys, exec_func):
         super().__init__()  #inits mother class
         self.config = Config()
-        self.twiter_id = self.config.TWITTER_ID  #id of the tracked profile
+        self.twitter_id = self.config.TWITTER_ID  #id of the tracked profile
         self.keywords = self.config.KEYWORD  #keywords wich have to be in the tweet
         self.exec_func = exec_func  #function to be executed on verifed status
 
@@ -38,7 +38,7 @@ class TweetListener(tweepy.StreamListener):
         self.update()
 
     def update(self):
-        self.stream.filter(follow=[self.tweeter_id])
+        self.stream.filter(follow=[self.twitter_id])
 
     def set_tweeter_id(self, tweeter_id):
         self.tweeter_id = tweeter_id
