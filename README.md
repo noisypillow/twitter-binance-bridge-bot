@@ -14,8 +14,23 @@ This bot is able to buy and sell $DOGE on Binance whenever Elon Musk tweets abou
 - [ ] Complete CLI
 - [ ] Docs
 
-## User guide
+## 📖 User guide
+### 🖥 Installation
+##### **1. With Git**
+Run the following commands in a terminal:
+```
+git clone https://github.com/NoisyPillow/twitter-binance-bridge-bot.git
+cd twitter-binance-bridge-bot
+python -m pip install -r requirements.txt
+```
+##### **2. Without Git**
+* [Download](https://github.com/NoisyPillow/twitter-binance-bridge-bot/archive/refs/heads/master.zip) the .zip folder and unzip it
+* `cd` into it
+* Run `python -m pip install -r requirements.txt`
 
+### ✏ Usage
+* `cd` into the *twitter-binance-bridge-bot* folder
+* Run `python BinanceTwitterBridge.py`
 
 ## What you can configure (in `config.json` or directly from CLI)
 
